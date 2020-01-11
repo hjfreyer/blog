@@ -1,0 +1,29 @@
+---
+layout: post
+title: What are the chances?
+date: '2012-04-01T16:08:00.000-04:00'
+author: Hunter Freyer
+tags:
+modified_time: '2012-04-01T16:08:04.511-04:00'
+thumbnail: http://2.bp.blogspot.com/-7fPxcLIA0Ws/T3it9oc6g7I/AAAAAAAACzc/wmRdRXNK3ss/s72-c/CodeCogsEqn+(1).gif
+blogger_id: tag:blogger.com,1999:blog-203463942347409368.post-6711264306050032536
+blogger_orig_url: http://blog.hjfreyer.com/2012/04/what-are-chances.html
+---
+
+I'm working on a short story about probability, and how people react to extremely improbable events, specifically a coin
+which always comes up heads. Basic probability tells us that the chances that a coin will be tossed heads N times in a
+row goes down exponentially has N increases, but I wanted to get a better sense of what that really
+meant.<br /><br />I wanted to know: how many times in a row does a coin have to come up heads for you to call it extremely improbable? I decided "extremely improbable" would mean, "If you flipped a coin every second for an entire lifetime, you'd only have a 50% chance of seeing it happen."<br /><br />My first step was to determine the probability of seeing N heads flips in a row, given that you flipped M coins. I came up with a pair of&nbsp;mutually&nbsp;recursive equations which describe this. One gives the number of sequences of length M containing a subsequence of N heads results in a row, the other gives the number of sequences of length M which don't.<br /><br />
+<div class="separator" style="clear: both; text-align: center;"><a
+		href="http://2.bp.blogspot.com/-7fPxcLIA0Ws/T3it9oc6g7I/AAAAAAAACzc/wmRdRXNK3ss/s1600/CodeCogsEqn+(1).gif"
+		imageanchor="1"
+		style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-7fPxcLIA0Ws/T3it9oc6g7I/AAAAAAAACzc/wmRdRXNK3ss/s1600/CodeCogsEqn+(1).gif" /></a>
+</div><br />
+<div class="separator" style="clear: both; text-align: center;"></div>
+<div class="separator" style="clear: both; text-align: center;"></div>
+<div class="separator" style="clear: both; text-align: center;"><a
+		href="http://4.bp.blogspot.com/-Rk-pKHiT2Sg/T3iw7ze4obI/AAAAAAAACzs/4DvoSminRZM/s1600/CodeCogsEqn+(4).gif"
+		imageanchor="1"
+		style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-Rk-pKHiT2Sg/T3iw7ze4obI/AAAAAAAACzs/4DvoSminRZM/s1600/CodeCogsEqn+(4).gif" /></a>
+</div>
+<br />I'm too lazy to justify it here, but I verified it against a brute-force approach for M and N up to 15, and it works. Figuring out why it works is an exercise left to the reader.<br /><br />I wrote a dynamic programming algorithm to compute this in Go, and with a little bit of work, I got my answer:<br /><br />If you flip a coin every second for 108 years (a very generous lifetime), you have about a 50% chance of ever seeing the coin come up heads 31 times in a row. To get 10 headses in a row with 50% probability, you only need&nbsp;1,421 flips (about 24 minutes at one flip per second) . To get 31 you need about 3.4 billion.<br /><br />Only 31 flips. I think that's remarkable.

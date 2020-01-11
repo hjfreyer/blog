@@ -1,0 +1,49 @@
+---
+layout: post
+title: 'High-stakes Quasar: AKA, free money in Mass Effect'
+date: '2011-12-21T00:03:00.002-05:00'
+author: Hunter Freyer
+tags:
+modified_time: '2011-12-21T00:03:45.196-05:00'
+blogger_id: tag:blogger.com,1999:blog-203463942347409368.post-4122884977569106395
+blogger_orig_url: http://blog.hjfreyer.com/2011/12/high-stakes-quasar-aka-free-money-in.html
+---
+
+<i>This is documented other places on the web, but I had fun with it, so I figured I'd write it up.</i><br /><i><br /></i><br />I've been replaying Mass Effect 1 recently. I noticed that in a club called Flux on the Citadel, there's a casino game called "Quasar". It's essentially a blackjack style game; you want to get as close to 20 points as possible without going over, and each round you can either "stay" and cash out for a known cash prize, or you can "hit" to add a random number of points to your score, but then you risk busting. The minor novelty to Quasar is that when you hit you can choose to add either 1-8 points or 4-7 points to your score.<br /><br />To be more concrete, the game costs 200 credits to play, and has the following payouts:<br /><br /><span style="font-family: 'Courier New', Courier, monospace;">0-14: 0<br />15: &nbsp;50<br />16: 100<br /> 18: 250<br />17: 200<br />19: 300<br />20: 400<br />21+: &nbsp;0</span><br /><br />I played a few rounds and lost, when I realized that I'm a programmer! I can make the compute figure out the optimal strategy, and whether it's worth playing!
+<br />
+<div>
+	<br />I whipped up a little dynamic programming algorithm, and it turns out casino owners in Mass Effect aren't very savvy businessmen. Assuming all the dice rolls are uniform, here's what the optimal strategy looks like:<br />
+	<div style="text-align: left;"><span style="font-family: 'Courier New', Courier, monospace;"></span></div>
+	<br /><span style="font-family: 'Courier New', Courier, monospace;">0:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>244.60</span><br /><span style="font-family: 'Courier New', Courier, monospace;">1:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>244.61</span><br /><span style="font-family: 'Courier New', Courier, monospace;">2:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>238.44</span><br /><span style="font-family: 'Courier New', Courier, monospace;">3:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>235.73</span><br /><span style="font-family: 'Courier New', Courier, monospace;">4:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>237.23</span><br /><span style="font-family: 'Courier New', Courier, monospace;">5:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>242.82</span><br /><span style="font-family: 'Courier New', Courier, monospace;">6:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>247.19</span><br /><span style="font-family: 'Courier New', Courier, monospace;">7:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>251.15</span><br /><span style="font-family: 'Courier New', Courier, monospace;">8:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>237.30</span><br /><span style="font-family: 'Courier New', Courier, monospace;">9:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>218.13</span><br /><span style="font-family: 'Courier New', Courier, monospace;">10:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>221.67</span><br /><span style="font-family: 'Courier New', Courier, monospace;">11:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>230.37</span><br /><span style="font-family: 'Courier New', Courier, monospace;">12:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>249.22</span><br /><span style="font-family: 'Courier New', Courier, monospace;">13:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>287.50</span><br /><span style="font-family: 'Courier New', Courier, monospace;">14:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>237.50</span><br /><span style="font-family: 'Courier New', Courier, monospace;">15:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	4-7<span class="Apple-tab-span" style="white-space: pre;">  </span>175.00</span><br /><span style="font-family: 'Courier New', Courier, monospace;">16:<span class="Apple-tab-span" style="white-space: pre;"> </span>hit
+	1-8<span class="Apple-tab-span" style="white-space: pre;">  </span>143.75</span><br /><span style="font-family: 'Courier New', Courier, monospace;">17:<span class="Apple-tab-span" style="white-space: pre;"> </span>stay<span class="Apple-tab-span" style="white-space: pre;">  </span>200.00</span><br /><span style="font-family: 'Courier New', Courier, monospace;">18:<span class="Apple-tab-span" style="white-space: pre;"> </span>stay<span class="Apple-tab-span" style="white-space: pre;">  </span>250.00</span><br /><span style="font-family: 'Courier New', Courier, monospace;">19:<span class="Apple-tab-span" style="white-space: pre;"> </span>stay<span class="Apple-tab-span" style="white-space: pre;">  </span>300.00</span><br /><span style="font-family: 'Courier New', Courier, monospace;">20:<span class="Apple-tab-span" style="white-space: pre;"> </span>stay<span class="Apple-tab-span" style="white-space: pre;">  </span>400.00</span><br /><br /><br />
+	<div>The first column is your score, the middle is the action you should take, and the last is your expected return.
+		As you can see, the odds are pretty freaking good. You generally start out at somewhere between zero and five
+		points, where the expected profit is greater than 30 credits per round.</div>
+	<div><br /></div>
+		<div>Following this strategy, I went back to the machines and quickly won 1000 credits. Finally that programming
+			knowledge is paying off!</div>
+		<div><br /></div>
+			<div>Anyways, here's the code for the curious:</div>
+			<div><br /></div>
+				<div>
+					<div>
+						<span style="font-family: 'Courier New', Courier, monospace;"><div>def payout(n):</div><div>&nbsp; &nbsp; if n &lt;= 14 or n &gt; 20:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; return 0</div><div>&nbsp; &nbsp; return {</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 15: 50,</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 16: 100,</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 17: 200,</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 18: 250,</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 19: 300,</div><div>&nbsp; &nbsp; &nbsp; &nbsp; 20: 400</div><div>&nbsp; &nbsp; &nbsp; &nbsp; }[n]</div><div><br /></div><div>def avg(x):</div><div>&nbsp; &nbsp; return float(sum(x)) / len(x)</div><div><br /></div><div>res = dict()</div><div><br /></div><div><div>def expected(n):</div><div>&nbsp; &nbsp; if n &gt; 20:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; return ('stay', 0)</div><div><br /></div><div>&nbsp; &nbsp; if n in res:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; return res[n]</div><div><br /></div><div>&nbsp; &nbsp; stay = payout(n)</div><div><br /></div><div>&nbsp; &nbsp; hit1 = avg([expected(n + x)[1] for x in range(1, 9)])</div><div>&nbsp; &nbsp; hit2 = avg([expected(n + x)[1] for x in range(4, 8)])</div><div><br /></div><div>&nbsp; &nbsp; m = max([stay, hit1, hit2])</div><div><br /></div><div>&nbsp; &nbsp; if m == stay:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; res[n] = ('stay', m)</div><div>&nbsp; &nbsp; elif m == hit1:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; res[n] = ('hit 1-8', m)</div><div>&nbsp; &nbsp; elif m == hit2:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; res[n] = ('hit 4-7', m)</div><div><br /></div><div>&nbsp; &nbsp; return res[n]</div><div><br /></div><div>expected(0)</div><div><br /></div><div>for k, (a, e) in res.iteritems():</div><div>&nbsp; &nbsp; print '%d:\t%s\t\t%0.2f' % (k, a, e)</div></div></span>
+					</div>
+				</div>
+			</div>

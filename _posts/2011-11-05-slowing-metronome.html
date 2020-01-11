@@ -1,0 +1,31 @@
+---
+layout: post
+title: Slowing metronome
+date: '2011-11-05T22:34:00.001-04:00'
+author: Hunter Freyer
+tags:
+- variable tempo metronome
+- sleep aid
+- coding
+- variable rate metronome
+- sleep metronome
+modified_time: '2011-11-06T23:04:14.285-05:00'
+thumbnail: http://1.bp.blogspot.com/-tmyqnLqEOdg/TrXvI4j9nAI/AAAAAAAAB7o/HWHaNpdGGGw/s72-c/CodeCogsEqn.gif
+blogger_id: tag:blogger.com,1999:blog-203463942347409368.post-2692948093988452504
+blogger_orig_url: http://blog.hjfreyer.com/2011/11/slowing-metronome.html
+---
+
+A few nights ago I was wired and restless and couldn't sleep, and I wondered if there was something I could listen to
+that would help me chill out. I searched around the Android app store for sleep-related apps, but most of them just
+played noises of crickets or rain or new age music and it wasn't helping. I wanted something simple and rhythmic I could
+focus on. Perhaps a
+metronome.<br /><br />But what tempo? Too fast and it'd keep me wired. Too slow and I'd be impatient and annoyed. So I had an idea: how about a metronome that slows down gradually over a long time period?<br /><br />I eventually got to sleep, but I kept playing with the idea. Yesterday I decided to write it up. I grabbed my notebook and used the power of calculus to find a formula for the frequency of the metronome over time. The key condition was that I wanted the period between ticks to get longer by a fixed N% with each tick, so the change would be as uniform as possible.<br /><br />Here's the formula for the frequency at time t, given that the metronome starts with frequency<span style="background-color: transparent;">&nbsp;S and ends with frequency E after D seconds:</span><br /><span style="background-color: transparent;"><br /></span><br />
+<div class="separator" style="clear: both; text-align: center;"><a
+		href="http://1.bp.blogspot.com/-tmyqnLqEOdg/TrXvI4j9nAI/AAAAAAAAB7o/HWHaNpdGGGw/s1600/CodeCogsEqn.gif"
+		imageanchor="1"
+		style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://1.bp.blogspot.com/-tmyqnLqEOdg/TrXvI4j9nAI/AAAAAAAAB7o/HWHaNpdGGGw/s1600/CodeCogsEqn.gif" /></a>
+</div>
+<br />So I whipped up a little script using pygame and when going to sleep last night I set it to tick for 15 minutes, starting at 90 beats per minute, ending at 12 bpm. I don't remember when it stopped, so that's a good sign! Try it out and let me know if it works!<br /><br /><a
+	href="http://hjfreyer.googlecode.com/hg/metronome.py" target="_blank">Download the code</a>.<br /><br />
+<pre
+	style="background: #f0f0f0; border: 1px dashed #CCCCCC; color: black; font-family: arial; font-size: 12px; height: auto; line-height: 20px; overflow: auto; padding: 0px; text-align: left; width: 99%;"><code style="color: black; word-wrap: normal;"> #!/usr/bin/env python  <br /> #  <br /> # Copyright 2011 Hunter Freyer (yt@hjfreyer.com)  <br /> #  <br /> # Licensed under the Apache License, Version 2.0 (the "License");  <br /> # you may not use this file except in compliance with the License.  <br /> # You may obtain a copy of the License at  <br /> #  <br /> #  http://www.apache.org/licenses/LICENSE-2.0  <br /> #  <br /> # Unless required by applicable law or agreed to in writing, software  <br /> # distributed under the License is distributed on an "AS IS" BASIS,  <br /> # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  <br /> # See the License for the specific language governing permissions and  <br /> # limitations under the License.  <br />   <br /> """A metronome with a gradually changing tempo.  <br />   <br /> Usage:  <br />   <br />  python metronome.py &lt;duration&gt; &lt;bpm_at_start&gt; &lt;bpm_at_end&gt;.  <br />   <br /> For example, a metronome invoked with the following:  <br />   <br />  python metronome.py 900 120 12  <br />   <br /> Would tick for 15 minutes, slowing from a starting beat of 2 beats per  <br /> second to an ending rate of one beat every 5 seconds.  <br />   <br /> Requires pygame.  <br /> """  <br />   <br /> import pygame  <br /> import math  <br />   <br />   <br /> def tick(duration, start_rate, end_rate):  <br />   pygame.mixer.pre_init(44100, -16, 2, 512)  <br />   pygame.init()  <br />   <br />   def rate(t):  <br />     return (start_rate*end_rate*duration)/(  <br />       t*(start_rate-end_rate) + end_rate*duration)  <br />   <br />   <br />   clock = pygame.time.Clock()  <br />   time = 0  <br />   tick_sound = pygame.mixer.Sound('SoMe TeXt To PlAy')  <br />   print "Control-C to exit."  <br />   <br />   while True:  <br />     if time &gt; duration:  <br />       return  <br />     tick_sound.play()  <br />     time += clock.tick(rate(time)) / 1000.0  <br />   <br />   <br /> def main(argv):  <br />   if len(argv) != 4:  <br />     print __doc__  <br />     return -1   <br />   duration = float(argv[1])  <br />   start = float(argv[2]) / 60  <br />   end = float(argv[3]) / 60  <br />   tick(duration, start, end)  <br />   <br /> if __name__ == '__main__':  <br />   import sys  <br />   main(sys.argv)  <br /></code></pre>

@@ -1,0 +1,119 @@
+---
+layout: post
+title: HTTP based read-only files system
+date: '2010-10-21T12:16:00.002-04:00'
+author: Hunter Freyer
+tags:
+modified_time: '2010-10-22T16:42:38.064-04:00'
+blogger_id: tag:blogger.com,1999:blog-203463942347409368.post-4109129818788645978
+blogger_orig_url: http://blog.hjfreyer.com/2010/10/http-based-read-only-files-system.html
+---
+
+I've become thoroughly fed up with the lack of progress in the space of web-based IDEs and text editors.<br /><br />While
+<a href="http://codemirror.net/">there</a> <a href="https://mozillalabs.com/skywriter/">are</a>&nbsp;<a
+	href="http://www.ymacs.org/">several</a> editors which can run in the browser, all of the ones I've seen lack a
+pretty basic feature: <i>save</i>. I've seen <a href="http://shiftedit.net/">one project</a> which can save files by
+uploading them to your own server via (S)FTP, which would merely be horridly slow if it worked, but it doesn't. So much
+for
+that.<br /><br />So I've decided to write as dumb an editor as possible on AppEngine. The editing part I'll just rip off from one of the above editors (probably CodeMirror), the saving is trivial - POST data and shove it in data store, but the reading is a little tricky. How do I expose the saved files in a meaningful, but simple way<br /><br />I've looked at the following protocols:<br />
+<ul>
+	<li><a href="http://en.wikipedia.org/wiki/WebDAV">WebDAV</a></li>
+	<li><a href="http://en.wikipedia.org/wiki/Amazon_S3">Amazon S3</a></li>
+	<li><a href="http://en.wikipedia.org/wiki/Content_Management_Interoperability_Services">CMIS</a></li>
+</ul>
+<div>Know what I see when I read that? "Blah, blah, blah, blah, blah." It's too complicated! Give me something stupid!
+</div>
+<div><br /></div>
+	<div>So I'm making my own protocol. Let's call it... the Hypertext File Interface, or <b>HFI</b> for now.</div>
+	<div>
+		<ol>
+			<li>File System Root (denoted $ROOT) is any valid URI.</li>
+			<ol></ol>
+			<li>File Name ($FILENAME):</li>
+			<ol>
+				<li>Any string of URL-safe characters.</li>
+				<li>A server receiving a file name from a client MUST&nbsp;canonicalize&nbsp;it according to the
+					following procedure:</li>
+				<ol>
+					<li>Strip off all leading and trailing "/"s.</li>
+					<li>Replace any subsequence of "/"s of length greater than one with a single "/".</li>
+				</ol>
+				<li>Note that this means that potentially "unclean" File Names like "." or ".." are allowed, though
+					nonsensical ones like the empty string or "/" are not.</li>
+				<li>Servers MAY ignore case in File Names, but clients SHOULD NOT assume two Canonicalized File Names
+					which differ only in terms of case refer to the same file.</li>
+			</ol>
+			<li>A File or a Directory are what you expect. Both are denoted by File Names.</li>
+			<li>Info method (for housekeeping):</li>
+			<ol>
+				<li>When an HTTP GET is called on "$ROOT/info", the server MUST reply with status 200, and a body
+					exactly equal to the string "{'version' : 1}".&nbsp;</li>
+			</ol>
+			<li>Read method: an HTTP GET to "$ROOT/read/$FILENAME" calls the Read method.</li>
+			<ol>
+				<li>If $FILENAME Exists and is a File according to the server, &nbsp;MUST return status 200 and the
+					exact contents of the File as the body.</li>
+				<li>If $FILENAME does not Exist or refers to a Directory, the server MUST return a 404 code.</li>
+				<ol></ol>
+			</ol>
+			<li>List method: an HTTP GET to "$ROOT/list/$FILENAME" calls the List method.</li>
+			<ol>
+				<li>If $FILENAME does not Exist, the server MUST return 404.</li>
+				<li>If $FILENAME refers to a File, the server MUST return with status 200, with the body consisting of a
+					single line: the canonicalized version of $FILENAME (no $ROOT or "/list/").</li>
+				<li>If $FILENAME refers to a Directory object, the server MUST reply with status 200, with body listing
+					the Directory's contents.</li>
+				<ol>
+					<li>Each line of the response consists of a single File Name denoting a file existing in that
+						directory.</li>
+					<li>Each File Name in the body MUST be canonicalized, and start with the canonicalized version of
+						$FILENAME followed by a "/".</li>
+					<li>File Names corresponding to Directories are denoted by the addition of a single trailing "/".
+					</li>
+					<li>A Listing of a Directory MUST NOT include the Directory's $FILENAME itself (a consequence of
+						(2)).</li>
+					<li>An empty response indicates an Existing but empty Directory, which the server MAY allow if it
+						chooses.</li>
+				</ol>
+				<li>The appearance of a File Name ($FILE2) in a Listing indicates that if a List or Read call (whichever
+					is appropriate) was made at the same time this List call was made, $FILE2 MUST have Existed. Of
+					course, if the underlying File System is mutable, all bets are off when it comes to subsequent calls
+					any amount of time in the future.&nbsp;</li>
+				<li>Furthermore, every Existing File Name SHOULD appear in EXACTLY one directory listing, except for "",
+					which corresponds to the Root Directory. Hidden File and Directories are allowed, but may be
+					annoying/confusing.</li>
+			</ol>
+			<li>Security/authentication:</li>
+			<ol>
+				<li>HTTPS</li>
+				<ol>
+					<li>A server MAY provide an HFI service over HTTPS. Besides the fact that $ROOT will begin with
+						"https://", the protocol remains the same.</li>
+					<li>Given two valid file system roots, $ROOT and $ROOTS, such that the only difference is that
+						$ROOTS has "https://" instead of "http://", they MUST refer to the same underlying file
+						structure.</li>
+					<li>A client can ascertain whether HTTP and/or HTTPS is supported by calling the Info method on both
+						the "http" and "https" versions of the file system root.</li>
+				</ol>
+				<li>Authentication</li>
+				<ol>
+					<li>The server MAY decide whether a user has access to a given filesystem based on Cookies (or other
+						HTTP headers), but not based on query parameters (query parameters are treated as part of the
+						file name).</li>
+					<li>If a server decides the user does not have access to the file system, all HTTP GETs on any URL
+						beginning with $ROOT MUST return 403.</li>
+					<li>If a server decides the user<i>&nbsp;</i>does have access to the file system, all HTTP GETs on
+						any URL beginning with $ROOT MUST NOT return 403.</li>
+					<li>I.E., Authentication is all or nothing for a given $ROOT.</li>
+				</ol>
+			</ol>
+		</ol>
+		<div>
+			<div>One thing that I really like about this is the fact that you don't even need a real servlet to
+				implement it - a little Bash script could easily be written to copy/symlink files into a "read/"
+				directory, and print the output of "ls" into index.html files in a "list/" directory.</div>
+			<div>
+				<br />This is also quite extensible (e.g. I could easy add a Stat method), and could very easily be given a FUSE front-end.<br /><br /></div>
+				Any comments? Worries? A list of solutions I'm reinventing?&nbsp;</div>
+			<div></div>
+		</div>
